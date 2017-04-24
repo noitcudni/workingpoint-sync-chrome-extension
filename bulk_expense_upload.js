@@ -29,6 +29,10 @@ function constructSheet($sheetDom, jsonData) {
           d['Name'] +
           '</td>' +
           '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;">' +
+          '<input data-list="CSS, JavaScript, HTML, SVG, ARIA, MathML" class="dropdown-input" />' +
+          '<button id="btn'+ i +'" class="dropdown-btn" type="button"><span class="caret"></span></button>' +
+          '</td>' +
+          '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;">' +
           d['Amount'] +
           '</td>' +
           '</tr>'
@@ -49,9 +53,6 @@ $(document).ready(function(){
   $("#add_panel .side-box-padding").append($bulkExpenseBtn);
   $("body").append($sheet);
 
-  // $("#bulk_expense").click(function(){
-  // });
-
 
   $("#fileInput").change(function() {
     console.log("did I get here?");
@@ -59,7 +60,6 @@ $(document).ready(function(){
       var reader = new FileReader();
       reader.onload = (function (e) {
         var rawTxt = e.target.result;
-        // console.log(rawTxt);
         Papa.parse(rawTxt, {
           header: true,
           complete: function(r) {
@@ -69,6 +69,28 @@ $(document).ready(function(){
             constructSheet($("#sheet table"), data);
             $("#sheet").show();
           }});
+
+
+        var dropdownInputArry = $("input.dropdown-input");
+
+        $.each(dropdownInputArry, function(i, input_dom) {
+          var comboplete = new Awesomplete(input_dom, {
+	          minChars: 0
+          });
+          Awesomplete.$('#btn'+i).addEventListener("click", function() {
+	          if (comboplete.ul.childNodes.length === 0) {
+		          comboplete.minChars = 0;
+		          comboplete.evaluate();
+	          }
+	          else if (comboplete.ul.hasAttribute('hidden')) {
+		          comboplete.open();
+	          }
+	          else {
+		          comboplete.close();
+	          }
+          });
+        });
+
       });
       reader.readAsText(f);
     });
