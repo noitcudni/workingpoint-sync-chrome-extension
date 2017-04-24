@@ -1,0 +1,21 @@
+{
+  "name" : "Workingpoint - Bulk Expense Uploader",
+  "version" : "0.1",
+  "manifest_version": 2,
+  "description": "",
+  "content_scripts" : [
+    {
+      "matches" : ["https://*.workingpoint.com/home"],
+      "css" : ["datatables.min.css"],
+      "js" : ["jquery-3.2.0.min.js", "papaparse.min.js", "datatables.min.js", "bulk_expense_upload.js"]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "bg.js"
+    ]
+  },
+  "permissions": [
+    "https://www.google.com/webmasters/*"
+  ]
+}
