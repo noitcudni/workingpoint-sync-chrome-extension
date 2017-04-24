@@ -82,13 +82,14 @@ function constructSheet($sheetDom, jsonData) {
 
     if (!(d['Date'] == undefined || d['Date'] == '')) {
       $sheetDom.append(
-        '<tr>' +
+        '<tr row="'+i+'">' +
           '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;">' +
           d['Date'] +
           '</td>' +
           '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;">' +
           d['Name'] +
           '</td>' +
+          '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;"><input class="my-checkbox" row="'+i+'"type="checkbox"></td>' +
           '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;">' +
           '<input size="50" data-list="#mylist" class="dropdown-input" />' + //my list is defined by $dropdownData
           '<button id="btn'+ i +'" class="dropdown-btn" type="button"><span class="caret"></span></button>' +
@@ -99,15 +100,17 @@ function constructSheet($sheetDom, jsonData) {
           '</tr>'
       );
     }
-  }
+  } // for
+  $sheetDom.append();
 }
 
 $(document).ready(function(){
   console.log("bulk expense upload ready");
   var $bulkExpenseBtn = $('<a id="bulk_expense" href="#" class="largegrey-button">Bulk Record Expenses<small></small></a>');
   var $csvFileInput = $('<input id="fileInput" type="file" />');
-  var $sheet= $('<div id="sheet" style="z-index:1000; position: absolute; left:50%; top:5%; background-color:#ffffff; display:none;">\
+  var $sheet= $('<div id="sheet" style="z-index:1000; position: absolute; left:30%; top:5%; background-color:#ffffff; display:none;">\
 <table style="border: 1px solid black;"></table>\
+<button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px;" type="button">Import Data</button>\
 </div>');
 
 var $dropdownData = $('<div style="display:none">\
@@ -205,6 +208,7 @@ var $dropdownData = $('<div style="display:none">\
             maxItems: 100,
             autoFirst: true
           });
+
           Awesomplete.$('#btn'+i).addEventListener("click", function() {
 	          if (comboplete.ul.childNodes.length === 0) {
 		          comboplete.minChars = 0;
@@ -217,6 +221,11 @@ var $dropdownData = $('<div style="display:none">\
 		          comboplete.close();
 	          }
           });
+        });
+
+        $(".my-checkbox").click(function(e){
+          var row_id = $(e.target).attr('row');
+          $("tr[row='"+row_id+"']").attr('bgcolor', '#98fb98');
         });
 
       });
