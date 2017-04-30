@@ -110,7 +110,7 @@ $(document).ready(function(){
   var $csvFileInput = $('<input id="fileInput" type="file" />');
   var $sheet= $('<div id="sheet" style="z-index:1000; position: absolute; left:30%; top:5%; background-color:#ffffff; display:none;">\
 <table style="border: 1px solid black;"></table>\
-<button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px;" type="button">Import Data</button>\
+<button id="import-btn" style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px;" type="button">Import Data</button>\
 </div>');
 
 var $dropdownData = $('<div style="display:none">\
@@ -177,13 +177,14 @@ var $dropdownData = $('<div style="display:none">\
 <li>Utilities</li>\
 </ul></div>');
 
-  $("#add_panel .side-box-padding").append($csvFileInput);
-  $("#add_panel .side-box-padding").append($bulkExpenseBtn);
+  // $("#add_panel .side-box-padding").append($csvFileInput);
+  // $("#add_panel .side-box-padding").append($bulkExpenseBtn);
+  $("#local_nav").append($csvFileInput);
+  $("#local_nav").append($bulkExpenseBtn);
   $("body").append($sheet);
   $("body").append($dropdownData);
 
   $("#fileInput").change(function() {
-    console.log("did I get here?");
     $.each(this.files, function (i, f) {
       var reader = new FileReader();
       reader.onload = (function (e) {
@@ -205,8 +206,11 @@ var $dropdownData = $('<div style="display:none">\
           var comboplete = new Awesomplete(input_dom, {
 	          minChars: 0,
             sort: true,
-            maxItems: 100,
-            autoFirst: true
+            maxItems: 100
+            // autoFirst: true
+            // "awesomplete-select": function(e){
+              // console.log(e);
+            // }
           });
 
           Awesomplete.$('#btn'+i).addEventListener("click", function() {
@@ -225,7 +229,56 @@ var $dropdownData = $('<div style="display:none">\
 
         $(".my-checkbox").click(function(e){
           var row_id = $(e.target).attr('row');
-          $("tr[row='"+row_id+"']").attr('bgcolor', '#98fb98');
+          if (e.currentTarget.checked) {
+            $("tr[row='"+row_id+"']").attr('bgcolor', '#98fb98');
+          } else {
+            $("tr[row='"+row_id+"']").attr('bgcolor', '#ffffff');
+          }
+        });
+
+        $("#import-btn").click(function(){
+          var $selectedRows = $("input.my-checkbox:checked"); //xxx
+          var rows = $selectedRows.attr("row");
+
+          console.log("selected row");
+          // console.log(rows);//xxx TODO: loop throufh row
+          console.log($selectedRows);//xxx
+          console.log($selectedRows.length);//xxx
+          $.each($selectedRows, function(i, r){
+            var row_index = $(r).attr("row");
+            // console.log($(r).attr("row")); //xxx
+            var $td = $("tr[row='"+ row_index +"'] td");
+            // console.log($td);
+            console.log("-----");
+            var date = $($td[0]).text();
+            var paid_to = $($td[1]).text();
+            var account = $($td[3]).find("input").val();
+            var amount = $($td[4]).text();
+            console.log(date);
+            console.log(paid_to);
+            console.log(account);
+            console.log(amount);
+
+            // document.getElementById("launch_adjusting_entry_transaction_action_links").click();
+            // $("#launch_adjusting_entry_transaction_action_links")[0].dispatchEvent(new MouseEvent("click"));
+            $("#launch_adjusting_entry_transaction_action_links")[0].click();
+            // console.log($("#launch_adjusting_entry_transaction_action_links"));
+            // $(".blue-button.new_adjusting_entry_link")[0].dispatchEvent(new MouseEvent("click"));
+            // $(".blue-button.new_adjusting_entry_link")[0].click();
+
+            // $("#launch_adjusting_entry_transaction_action_links")[0].click();
+            // console.log($("#launch_adjusting_entry_transaction_action_links")[0]); //xxx
+            // console.log($(".new_form transaction_form"));
+            // console.log($("a[href='bank_account']"));
+            // console.log($("#new_expense_transaction_form_menu")).click();
+            // $("a.btn-arrow.button_link").parent()[0].dispatchEvent(new MouseEvent("click"));
+            // console.log($("a.btn-arrow.button_link").parent());
+            // $("a[href='bank_account']").parent()[0].dispatchEvent(new MouseEvent("click"));
+            // setTimeout(function() {
+              // console.log($("a[href='bank_account']"));
+              // $("a[href='bank_account']").trigger("click");
+            // }, 1000);
+          });
         });
 
       });
