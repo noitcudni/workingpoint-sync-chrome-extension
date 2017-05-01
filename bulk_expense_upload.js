@@ -1,3 +1,5 @@
+// payload when submit a expense : {"account_transaction":{"custom_values":{"name":"test","payment_method":""},"reference":"","posted_date":"04/30/2017","memo":"","entries":{"0":{"account":{"path":"Travel, Meals and Entertainment"},"memo":"","amount":"40.00","position":"0"}},"inventory_entries":{"0":{"item_id":"","item_qty":"","amount":"","unit_cost":"","position":"0"}},"account":{"path":"Checking Account"}},"expense":true,"authenticity_token":"pSydNvA8ShzwqfU9xRHMh3krVBZl8TVLceD9ClahTeQ=","need_widget_dom":true,"need_money_inout_chart_data":true,"need_expenses_chart_data":true,"submitting_form":true,"dont_handle_errors":true}
+
 // var row_tmpl = _.template(
 //   "\
 // <% _.each(jsonData, function(rowData){%>\
@@ -95,7 +97,7 @@ function constructSheet($sheetDom, jsonData) {
           '<button id="btn'+ i +'" class="dropdown-btn" type="button"><span class="caret"></span></button>' +
           '</td>' +
           '<td style="border: 1px solid black; border-collapse:collapse; padding: 5px;">' +
-          d['Amount'] +
+          Math.abs(d['Amount']) +
           '</td>' +
           '</tr>'
       );
@@ -109,6 +111,7 @@ $(document).ready(function(){
   var $bulkExpenseBtn = $('<a id="bulk_expense" href="#" class="largegrey-button">Bulk Record Expenses<small></small></a>');
   var $csvFileInput = $('<input id="fileInput" type="file" />');
   var $sheet= $('<div id="sheet" style="z-index:1000; position: absolute; left:30%; top:5%; background-color:#ffffff; display:none;">\
+<div id="my_form"></div>\
 <table style="border: 1px solid black;"></table>\
 <button id="import-btn" style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px;" type="button">Import Data</button>\
 </div>');
@@ -177,12 +180,14 @@ var $dropdownData = $('<div style="display:none">\
 <li>Utilities</li>\
 </ul></div>');
 
-  // $("#add_panel .side-box-padding").append($csvFileInput);
-  // $("#add_panel .side-box-padding").append($bulkExpenseBtn);
-  $("#local_nav").append($csvFileInput);
-  $("#local_nav").append($bulkExpenseBtn);
+  $("#add_panel .side-box-padding").append($csvFileInput);
+  $("#add_panel .side-box-padding").append($bulkExpenseBtn);
+    // $("#local_nav").append($csvFileInput);
+    // $("#local_nav").append($bulkExpenseBtn);
   $("body").append($sheet);
   $("body").append($dropdownData);
+
+
 
   $("#fileInput").change(function() {
     $.each(this.files, function (i, f) {
@@ -261,10 +266,24 @@ var $dropdownData = $('<div style="display:none">\
 
             // document.getElementById("launch_adjusting_entry_transaction_action_links").click();
             // $("#launch_adjusting_entry_transaction_action_links")[0].dispatchEvent(new MouseEvent("click"));
-            $("#launch_adjusting_entry_transaction_action_links")[0].click();
+            // $("#launch_adjusting_entry_transaction_action_links")[0].click();
             // console.log($("#launch_adjusting_entry_transaction_action_links"));
             // $(".blue-button.new_adjusting_entry_link")[0].dispatchEvent(new MouseEvent("click"));
-            // $(".blue-button.new_adjusting_entry_link")[0].click();
+            // $(".blue-button.new_adjusting_entry_link")[0].click(); //works in transaction
+
+            //TODO get rid of inner label
+
+            //inner_labeled account account_field basic-text-field full
+            //inner_labeled account account_field basic-text-field full
+
+            // setTimeout(function() {
+            // $("#account_transaction_new_entries_0_account_path").removeClass("inner_label").val("Checking Account"); //checking credit
+            // $("#account_transaction_new_entries_1_account_path").removeClass("inner_label").val(account); //expense debit
+            // $("#account_transaction_new_entries_0_credit").removeClass("inner_label").val(amount);
+            // $("#account_transaction_new_entries_1_debit").removeClass("inner_label").val(amount);
+            // $("#account_transaction_new_memo").removeClass("inner_label").val(paid_to); //business name
+            // $("#account_transaction_new_posted_date").val(date);
+            // }, 1100);
 
             // $("#launch_adjusting_entry_transaction_action_links")[0].click();
             // console.log($("#launch_adjusting_entry_transaction_action_links")[0]); //xxx
@@ -273,14 +292,37 @@ var $dropdownData = $('<div style="display:none">\
             // console.log($("#new_expense_transaction_form_menu")).click();
             // $("a.btn-arrow.button_link").parent()[0].dispatchEvent(new MouseEvent("click"));
             // console.log($("a.btn-arrow.button_link").parent());
-            // $("a[href='bank_account']").parent()[0].dispatchEvent(new MouseEvent("click"));
-            // setTimeout(function() {
-              // console.log($("a[href='bank_account']"));
-              // $("a[href='bank_account']").trigger("click");
-            // }, 1000);
-          });
-        });
+            var token = $("meta[name='csrf-token']").attr("content");
+            console.log(token);
 
+            $.ajax({
+              type: "POST",
+              headers: {
+                "X-CSRF-Token": token,
+                "X-Request": "JSON",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+              },
+              error: function(error) {
+                console.log(error);
+              },
+              url: "https://polymorphiclabs.workingpoint.com/payment_made_transactions",
+              data: JSON.stringify({"account_transaction":
+                                    {"custom_values":
+                                     {"name": paid_to,
+                                      "payment_method":"Online/EFT"},
+                                     "reference":"",
+                                     "posted_date": date,
+                                     "memo":"","entries":{"0":{"account":{"path":account},"memo":"","amount": amount,"position":"0"}},
+                                     "inventory_entries":{"0":{"item_id":"","item_qty":"","amount":"","unit_cost":"","position":"0"}},
+                                     "account":{"path":"Checking Account"}
+                                    },
+                                    "expense":true,"authenticity_token":"JNSo9NSV0t32SAu2WfcFAQLeqAQDDKEj2o8JfSpLxQs=","need_widget_dom":true,"need_money_inout_chart_data":true,"need_expenses_chart_data":true,"submitting_form":true,"dont_handle_errors":true})
+            });
+          });
+        $("#sheet").hide();
+        });
       });
       reader.readAsText(f);
     });
