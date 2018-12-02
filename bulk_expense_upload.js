@@ -1,6 +1,7 @@
 // payload when submit a expense : {"account_transaction":{"custom_values":{"name":"test","payment_method":""},"reference":"","posted_date":"04/30/2017","memo":"","entries":{"0":{"account":{"path":"Travel, Meals and Entertainment"},"memo":"","amount":"40.00","position":"0"}},"inventory_entries":{"0":{"item_id":"","item_qty":"","amount":"","unit_cost":"","position":"0"}},"account":{"path":"Checking Account"}},"expense":true,"authenticity_token":"pSydNvA8ShzwqfU9xRHMh3krVBZl8TVLceD9ClahTeQ=","need_widget_dom":true,"need_money_inout_chart_data":true,"need_expenses_chart_data":true,"submitting_form":true,"dont_handle_errors":true}
 
 // var row_tmpl = _.template(
+
 //   "\
 // <% _.each(jsonData, function(rowData){%>\
 // <tr>\
@@ -108,8 +109,9 @@ function constructSheet($sheetDom, jsonData) {
 
 $(document).ready(function(){
   console.log("bulk expense upload ready");
-  var $bulkExpenseBtn = $('<a id="bulk_expense" href="#" class="largegrey-button">Bulk Record Expenses<small></small></a>');
-  var $csvFileInput = $('<input id="fileInput" type="file" />');
+  // var $bulkExpenseBtn = $('<a id="bulk_expense" href="#" class="largegrey-button">Bulk Record Input<small></small></a>');
+  var $bulkExpenseBtn = $('<label for="fileInput" class="largegrey-button">Bulk Record Input</label>');
+  var $csvFileInput = $('<input style="display:none" id="fileInput" type="file" />');
   var $sheet= $('<div id="sheet" style="z-index:1000; position: absolute; left:30%; top:5%; background-color:#ffffff; display:none;">\
 <div id="my_form"></div>\
 <table style="border: 1px solid black;"></table>\
@@ -180,8 +182,9 @@ var $dropdownData = $('<div style="display:none">\
 <li>Utilities</li>\
 </ul></div>');
 
-  $("#add_panel .side-box-padding").append($csvFileInput);
   $("#add_panel .side-box-padding").append($bulkExpenseBtn);
+  $("#add_panel .side-box-padding").append($csvFileInput);
+
     // $("#local_nav").append($csvFileInput);
     // $("#local_nav").append($bulkExpenseBtn);
   $("body").append($sheet);
@@ -208,15 +211,17 @@ var $dropdownData = $('<div style="display:none">\
         var dropdownInputArry = $("input.dropdown-input");
 
         $.each(dropdownInputArry, function(i, input_dom) {
+          // console.log(input_dom); //xxx
           var comboplete = new Awesomplete(input_dom, {
 	          minChars: 0,
-            sort: true,
+            sort: false,
             maxItems: 100
             // autoFirst: true
             // "awesomplete-select": function(e){
               // console.log(e);
             // }
           });
+          // console.log(comboplete); //xxx
 
           Awesomplete.$('#btn'+i).addEventListener("click", function() {
 	          if (comboplete.ul.childNodes.length === 0) {

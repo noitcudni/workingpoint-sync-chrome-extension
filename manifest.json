@@ -7,7 +7,7 @@
     {
       "matches" : ["https://*.workingpoint.com/home"],
       "css" : ["awesomplete.css", "awesomplete.base.css", "awesomplete.theme.css"],
-      "js" : ["jquery-3.2.0.min.js", "papaparse.min.js", "awesomplete.min.js", "bulk_expense_upload.js"]
+      "js" : ["jquery-3.2.0.min.js", "papaparse.min.js", "awesomplete.js", "bulk_expense_upload.js"]
     }
   ],
   "background": {
